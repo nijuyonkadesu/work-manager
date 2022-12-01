@@ -144,11 +144,14 @@ fun blurBitmap(bitmap: Bitmap, applicationContext: Context): Bitmap {
 fun writeBitmapToFile(applicationContext: Context, bitmap: Bitmap): Uri {
     val name = String.format("blur-filter-output-%s.png", UUID.randomUUID().toString())
     val outputDir = File(applicationContext.filesDir, OUTPUT_PATH)
+    //                                                  ^ Relative path
+    //                                       ^ points to default /data/data/com.blah.blah directory
     if (!outputDir.exists()) {
         outputDir.mkdirs() // should succeed
     }
     val outputFile = File(outputDir, name)
     var out: FileOutputStream? = null
+    // get output stream for the created file, and choke in the stuffs you made
     try {
         out = FileOutputStream(outputFile)
         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /* ignored for PNG */, out)
@@ -156,9 +159,7 @@ fun writeBitmapToFile(applicationContext: Context, bitmap: Bitmap): Uri {
         out?.let {
             try {
                 it.close()
-            } catch (ignore: IOException) {
-            }
-
+            } catch (ignore: IOException) { }
         }
     }
     return Uri.fromFile(outputFile)
