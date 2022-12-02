@@ -16,6 +16,7 @@ class BlurWorker(ctx: Context, parameters: WorkerParameters): Worker(ctx, parame
         val appContext = applicationContext
         val resourceUri = inputData.getString(KEY_IMAGE_URI)
         makeStatusNotification("Blurring image", appContext)
+        sleep() // visualization purposes
         return try {
             val resolver = appContext.contentResolver
 

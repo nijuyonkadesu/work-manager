@@ -24,8 +24,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.background.workers.BlurWorker
+import com.example.background.workers.CleanupWorker
+import com.example.background.workers.SaveImageToFileWorker
 
 
 class BlurViewModel(application: Application) : ViewModel() {
@@ -43,10 +46,32 @@ class BlurViewModel(application: Application) : ViewModel() {
      * @param blurLevel The amount to blur the image
      */
     internal fun applyBlur(blurLevel: Int) {
-        val blurRequest = OneTimeWorkRequest.Builder(BlurWorker::class.java)
-            .setInputData(createInputDataForUri())
+        // Work request to clean up temporary files, #1
+        var continuation = workManager
+            .beginWith(OneTimeWorkRequest
+                .from(CleanupWorker::class.java))
+
+        // Work request to blur X the number of times requested, #2
+        for (i in 0 until blurLevel) {
+            val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
+
+            // Input the Uri if this is the first blur operation
+            // After the first blur operation the input will be the output of previous
+            // blur operations.
+            if (i == 0) {
+                blurBuilder.setInputData(createInputDataForUri())
+            }
+            continuation = continuation.then(blurBuilder.build())
+        }
+
+        // Add WorkRequest to save the image to the filesystem, #3
+        val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
             .build()
-        workManager.enqueue(blurRequest)
+
+        continuation = continuation.then(save)
+
+        // actual start
+        continuation.enqueue()
     }
 
     private fun uriOrNull(uriString: String?): Uri? {
