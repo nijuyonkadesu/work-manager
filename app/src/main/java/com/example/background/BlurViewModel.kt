@@ -45,6 +45,10 @@ class BlurViewModel(application: Application) : ViewModel() {
      * @param blurLevel The amount to blur the image
      */
     internal fun applyBlur(blurLevel: Int) {
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(true)
+            .setRequiresStorageNotLow(true)
+            .build()
         // Work request to clean up temporary files, #1
         var continuation = workManager
             .beginUniqueWork(
@@ -68,6 +72,7 @@ class BlurViewModel(application: Application) : ViewModel() {
 
         // Add WorkRequest to save the image to the filesystem, #3
         val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
+            .setConstraints(constraints)
             .addTag(TAG_OUTPUT)
             .build()
 
