@@ -1,15 +1,20 @@
-WorkManager Codelab
+WorkManager 
 ===================================
 
 This repository contains the code for the
 [WorkManager Codelab](https://codelabs.developers.google.com/codelabs/android-workmanager):
 
-Java version
---------------
+This project uses work manager to schedule a work, for which it's completion is guaranteed by the android OS, regardless of whether the app is in foreground or killed by the user.
 
-The Java version of this codelab is available under the
-[`Java`](https://github.com/googlecodelabs/android-workmanager/tree/java) branch of this
-repository.
+## Previews
+<p align="center">
+<img src="previews/ss (1).png" alt="drawing" width="270px" />
+<img src="previews/ss (2).png" alt="drawing" width="270px" />
+<img src="previews/ss (3).png" alt="drawing" width="269px" /></br>
+</p>
+
+## Download APK
+Go to the [Releases](https://github.com/nijuyonkadesu/work-manager/releases) to download the latest APK
 
 Introduction
 ------------
